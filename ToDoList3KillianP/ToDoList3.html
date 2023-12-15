@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Tareas</title>
+
+  <style>
+
+    input[type="text"] {
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      margin-bottom: 10px;
+    }
+
+    button.add-button {
+      padding: 8px 12px;
+      font-size: 14px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    button.add-button:hover {
+      background-color: #45a049;
+    }
+
+    .completed {
+      text-decoration: line-through;
+      color: #4caf50; 
+    }
+
+    .completed button {
+      display: inline-block; 
+    }
+
+    li {
+      background-color: #fff; 
+    }
+
+    li.delete {
+      background-color: #ff9999; 
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Lista de Tareas</h1>
+
+<label for="newTask">Nueva Tarea:</label>
+<input type="text" id="newTask" placeholder="Agregar nueva tarea">
+<button class="add-button">Add</button>
+
+<label for="filter">Filtrar Tareas:</label>
+<input type="text" id="filter" placeholder="Filtrar tareas">
+
+<ul id="taskList"></ul>
+
+<template id="taskTemplate">
+  <div>
+    <input type="checkbox">
+    <span></span>
+    <button style="display: none;">Eliminar</button>
+  </div>
+</template>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const newTaskInput = document.getElementById('newTask');
+    const addButton = document.querySelector('.add-button');
+    const filterInput = document.getElementById('filter');
+    const taskList = document.getElementById('taskList');
+    const taskTemplate = document.getElementById('taskTemplate');
+
+    addButton.addEventListener('click', function () {
+      addTask(newTaskInput.value);
+      newTaskInput.value = '';
+    });
+
+    filterInput.addEventListener('input', function () {
+      filterTasks(filterInput.value);
+    });
+
+    function addTask(taskText) {
+      const taskClone = taskTemplate.content.cloneNode(true);
+      const div = taskClone.querySelector('div');
+      const checkbox = taskClone.querySelector('input[type="checkbox"]');
+      const span = taskClone.querySelector('span');
+      const deleteButton = taskClone.querySelector('button');
+
+      span.textContent = taskText;
+
+      checkbox.addEventListener('change', function () {
+        span.classList.toggle('completed', checkbox.checked);
+        deleteButton.style.display = checkbox.checked ? 'inline-block' : 'none';
+      });
+
+      deleteButton.addEventListener('click', function () {
+        div.classList.add('delete');
+        setTimeout(() => {
+          div.remove();
+        }, 500);
+      });
+
+      taskList.appendChild(taskClone);
+    }
+
+    function filterTasks(filterText) {
+      const tasks = taskList.getElementsByTagName('div');
+      for (const task of tasks) {
+        const taskSpan = task.querySelector('span');
+        const taskText = taskSpan.textContent.toLowerCase();
+        const isVisible = taskText.includes(filterText.toLowerCase());
+        task.style.display = isVisible ? 'flex' : 'none';
+      }
+    }
+  });
+</script>
+</body>
+</html>
